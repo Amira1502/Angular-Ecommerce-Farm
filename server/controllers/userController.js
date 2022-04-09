@@ -1,6 +1,10 @@
 // model database
 const connectDB = require("../database/connectDB");
 
+// export service 
+const { updateUser } = require("../services/userService");
+
+
  /**
  * @desc : get all users
  * @method : GET
@@ -14,67 +18,27 @@ const getUsers = async(req, res) => {
     else res.json(results)}          
 );
 };
-
-
  /**
  * @desc : update user
  * @method : GET
- * @path : http://localhost:7000/user/:_id'
+ * @path : http://localhost:7000/users/:id_user'
  * @data : no data
  * @acess : public
  */
-const updateUser = async(params) => {
-    const { error } = updateUserValidation(params);
-    if (error) throw { message: error.details[0].message, statusCode: 400 };
+const update_User =async (req, res, next) => {
+    const { id_user } = req.params;
+    const { name, email, password } = req.body;
   
-    const { userId, fullName, email, password } = params;
-    const hashedPassword = md5(password.toString());
-  
-    return new Promise((resolve, reject) => {
-      db.query(
-        `SELECT * FROM users WHERE user_id = ? AND password = ?`,
-        [userId, hashedPassword],
-        (err, result) => {
-          if (err) reject({ message: err, statusCode: 500 });
-  
-          if (result.length === 0) {
-            reject({
-              message: "Wrong credentials, please try again",
-              statusCode: 400,
-            });
-          } else {
-            if (email === result[0].email && fullName === result[0].full_name) {
-              reject({
-                message: "No new data has been provided",
-                statusCode: 400,
-              });
-            }
-  
-            let query = "";
-  
-            if (email !== result[0].email && fullName !== result[0].full_name) {
-              query = `full_name = '${fullName}', email = '${email}'`;
-            } else if (email !== result[0].email) {
-              query = `email = '${email}'`;
-            } else {
-              query = `full_name = '${fullName}'`;
-            }
-  
-            db.query(
-              `UPDATE users SET ${query} WHERE user_id = ?`,
-              [userId],
-              (err, result) => {
-                if (err) throw { message: err, statusCode: 500 };
-                resolve({
-                  message: "User details have been successfully updated",
-                  data: result,
-                });
-              }
-            );
-          }
-        }
-      );
-    });
-  }
+    updateUser({ id_user, name, email, password })
+      .then((result) => {
+        const { statusCode = 200, message, data } = result;
+        res.status(statusCode).send({ message, data });
+      })
+      .catch((err) => {
+        const { statusCode = 400, message, data } = err;
+        res.status(statusCode).send({ message, data }) && next(err);
+      });
+  };
+
   // exports modules
-   module.exports = {getUsers, updateUser}
+   module.exports = {getUsers, update_User}

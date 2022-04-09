@@ -33,6 +33,6 @@ router.get("/", userController.getUsers);
  * @data : no data
  * @acess : public
  */
-router.put("/:userId", userController.updateUser);
+router.put("/:id_user", userController.update_User);
 
 module.exports = router;
