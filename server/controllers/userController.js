@@ -8,7 +8,7 @@ const { updateUser } = require("../services/userService");
  /**
  * @desc : get all users
  * @method : GET
- * @path : http://localhost:7000/users
+ * @path : http://localhost:4000/users
  * @data : no data
  * @acess : public
  */
@@ -20,8 +20,8 @@ const getUsers = async(req, res) => {
 };
  /**
  * @desc : update user
- * @method : GET
- * @path : http://localhost:7000/users/:id_user'
+ * @method : PUT
+ * @path : http://localhost:4000/users/:id_user'
  * @data : no data
  * @acess : public
  */
